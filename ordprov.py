@@ -1,4 +1,4 @@
-import os, random
+import os, sys, random
 
 ########################
 ###### FUNCTIONS #######
@@ -36,11 +36,21 @@ def main(obj):
         UI.display_succeed(False)
         add_missed_words(obj)
         incorrect += 1
+        if 'debug' in sys.argv:
+            UI.display_debug_translation(obj, user_input)
     # Display correct translation
     print(obj[0])
     # Select new word or exit program:
     user_input = UI.new_word_or_exit()
     if user_input == '9':
+        exit()
+
+
+def check_args():
+    allowed = ['debug']
+    invalid = [a for a in sys.argv[1::1] if a not in allowed]
+    if invalid:
+        UI.display_check_args(allowed, invalid)
         exit()
 
 
@@ -136,6 +146,26 @@ class SanakoeUI:
     def display_check_input(self):
         print('Check input.')
         
+    def display_check_args(self, allowed, invalid):
+        print(f'Check call arguments - {", ".join(invalid)} not allowed.')
+        print(f'Allowerd arguments: {", ".join(allowed)}.')
+
+    def display_debug_translation(self, obj, user_input):
+        # If debug is given as argument, display list of correct ASCII characters and their ordinal number
+        # and those for user inputted translation.
+        # 
+        # It seems like sometimes python input() -function can't keep up with backspace during
+        # keyboard input and thus the translation comparison can be evaluated as unsuccesfull even though
+        # the correct translation is displayed in the shell.
+        print('---------- Debug info ----------')
+        print('Correct ASCII characters:')
+        print(obj[0].split(",")[0])
+        print([ord(c) for c in list(obj[0].split(",")[0])])
+        print('Input ASCII characters:')
+        print(user_input)
+        print([ord(c) for c in list(user_input)])
+        print('--------------------------------')
+
 
 ########################
 ###### Word-lists ######
@@ -286,6 +316,7 @@ if __name__ == '__main__':
     incorrect = 0
     missed_words = {}
     UI = SanakoeUI()
+    check_args()
     words = select_wordlist(words1, words2, words3)
     current_word = get_word(words)
     while True:
