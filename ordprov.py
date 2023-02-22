@@ -82,11 +82,7 @@ def update_current_word():
     # utilizing get_word() -function and word-list selected for current session
     global words
     global current_word
-    new_word = get_word(words)
-    while new_word == current_word:
-        new_word = get_word(words)
-    current_word = new_word
-
+    current_word = get_word({k: v for k, v in words.items() if k != current_word[0]})
 
 def add_missed_words(this_word):
     # Add_missed_words() validates if the key-value pair given in as parameter
